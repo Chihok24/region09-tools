@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Region 9 · Tools</title>
+  <meta name="description" content="Region 9 tools.">
+  <meta name="theme-color" content="#0b0f15">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/svg+xml" href="/region09-tools/favicon.svg">
+  <style>
+    :root {
+      --bg: #0b0f15;
+      --bg-2: #111722;
+      --surface: #1d2633;
+      --surface-2: #273345;
+      --fg: #eef2f7;
+      --muted: #a9b5c3;
+      --subtle: #738194;
+      --accent: #9aafc4;
+      --accent-strong: #b9cbdc;
+      --accent-deep: #3a536b;
+      --border: rgba(154, 175, 196, 0.20);
+      --border-hover: rgba(154, 175, 196, 0.42);
+      --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+      --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+      --cam: 132px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    html { background: var(--bg); }
+    body {
+      position: relative;
+      min-height: 100vh;
+      color: var(--fg);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+      display: flex; flex-direction: column;
+      background:
+        radial-gradient(60rem 30rem at 85% -10%, rgba(154,175,196,.13), transparent 60%),
+        radial-gradient(40rem 26rem at -10% 110%, rgba(58,83,107,.22), transparent 60%),
+        linear-gradient(180deg, var(--bg-2), var(--bg) 40rem);
+    }
+    body::before { /* faint grid texture */
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: linear-gradient(rgba(154,175,196,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(154,175,196,.045) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%);
+    }
+    header.top, main, footer { position: relative; z-index: 1; }
+    .wrap { width: 100%; max-width: 72rem; margin: 0 auto; padding: 0 1.25rem; }
+    header.top { border-bottom: 1px solid rgba(154,175,196,.10); background: rgba(11,15,21,.55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+    header.top .wrap { display: flex; align-items: center; gap: .65rem; height: 3.5rem; }
+    header.top img { width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 0 0 1px rgba(154,175,196,.25); }
+    header.top .brand { font-weight: 600; letter-spacing: -.01em; font-size: 1rem; }
+    main { flex: 1; padding: 2.75rem 0 4rem; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--mono); font-size: .75rem; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--accent); margin: 0;
+    }
+    .eyebrow::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #ff5a6a; box-shadow: 0 0 8px #ff5a6a; animation: rec 2.4s steps(1) infinite; }
+    h1 { margin: .4rem 0 0; font-size: clamp(2rem, 4.2vw, 2.75rem); font-weight: 500; letter-spacing: -.025em; color: #fff; }
+    .lead { margin: .5rem 0 0; color: var(--muted); font-size: .98rem; max-width: 36rem; }
+    .grid {
+      list-style: none; padding: 0; margin: 2.25rem 0 0;
+      display: grid; gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (min-width: 1100px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    .tile {
+      position: relative; display: flex; flex-direction: column; gap: .95rem;
+      height: 100%; padding: 1.3rem 1.3rem 1.15rem;
+      background: linear-gradient(180deg, var(--surface-2), var(--surface));
+      border-radius: .95rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 0 0 1px var(--border), 0 10px 30px -18px rgba(0,0,0,.8);
+      color: inherit; text-decoration: none; overflow: hidden;
+      transition: box-shadow .2s var(--ease), transform .2s var(--ease), background .2s var(--ease);
+    }
+    .tile::after { /* soft accent glow on hover */
+      content: ""; position: absolute; inset: auto -30% -60% auto; width: 70%; height: 90%;
+      background: radial-gradient(closest-side, rgba(154,175,196,.18), transparent);
+      opacity: 0; transition: opacity .25s var(--ease); pointer-events: none;
+    }
+    .tile:hover { transform: translateY(-3px); box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 0 1px var(--border-hover), 0 18px 40px -20px rgba(154,175,196,.45); }
+    .tile:hover::after { opacity: 1; }
+    .tile:active { transform: translateY(-1px) scale(.99); }
+    .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .icon {
+      width: 2.85rem; height: 2.85rem; border-radius: .7rem;
+      display: grid; place-items: center;
+      background: linear-gradient(160deg, #2a3a4c, #1a2533);
+      box-shadow: inset 0 0 0 1px rgba(154,175,196,.28), 0 6px 16px -8px rgba(0,0,0,.7);
+      color: var(--accent-strong);
+    }
+    .icon svg { width: 1.35rem; height: 1.35rem; }
+    .tile h2 { margin: 0; font-size: 1.08rem; font-weight: 600; letter-spacing: -.01em; color: #fff; }
+    .tile p { margin: .35rem 0 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
+    .open {
+      margin-top: auto; display: inline-flex; align-items: center; gap: .35rem;
+      font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--accent);
+    }
+    .open svg { width: .9rem; height: .9rem; transition: transform .2s var(--ease); }
+    .tile:hover .open { color: var(--accent-strong); }
+    .tile:hover .open svg { transform: translateX(3px); }
+    footer { padding: 1.25rem 0 2rem; color: var(--subtle); font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; }
+
+    /* ── CCTV camera ───────────────────────────────────────────── */
+    .cctv {
+      position: fixed; top: 6px; right: 10px; z-index: 5;
+      width: var(--cam); height: calc(var(--cam) * 0.74);
+      pointer-events: none; filter: drop-shadow(0 8px 14px rgba(0,0,0,.55));
+    }
+    .cctv svg { width: 100%; height: 100%; overflow: visible; display: block; }
+    .cctv .head { transform-box: view-box; transform-origin: 100px 34px; animation: pan 7s ease-in-out infinite; }
+    .cctv .pupil { transform-box: view-box; animation: look 7s ease-in-out infinite; }
+    .cctv .lid { transform-box: view-box; transform-origin: 40px 58px; transform: scaleY(0); animation: blink 7s ease-in-out infinite; }
+    .cctv .rec { animation: rec 1.6s steps(1) infinite; }
+    .cctv .rec-glow { animation: recglow 1.6s steps(1) infinite; }
+    .cctv .glint { animation: glint 3.5s ease-in-out infinite; }
+    .cctv.tracking .head { animation: none; transform: rotate(var(--rot, 0deg)); transition: transform .35s var(--ease); }
+    .cctv.tracking .pupil { animation: none; transform: translate(var(--px, 0px), var(--py, 0px)); transition: transform .25s var(--ease); }
+    @keyframes pan {
+      0%, 100% { transform: rotate(-16deg); }
+      12%      { transform: rotate(-16deg); }
+      45%      { transform: rotate(12deg); }
+      58%      { transform: rotate(12deg); }
+      88%      { transform: rotate(-16deg); }
+    }
+    @keyframes look {
+      0%, 12%, 88%, 100% { transform: translate(-4px, 3px); }
+      45%, 58%           { transform: translate(4px, -2px); }
+    }
+    @keyframes blink {
+      0%, 61%, 63.5%, 100% { transform: scaleY(0); }
+      62.2%                { transform: scaleY(1); }
+    }
+    @keyframes rec { 0%, 55% { opacity: 1; } 56%, 100% { opacity: .2; } }
+    @keyframes recglow { 0%, 55% { opacity: .55; } 56%, 100% { opacity: 0; } }
+    @keyframes glint { 0%, 100% { opacity: .95; } 50% { opacity: .55; } }
+
+    @media (max-width: 640px) {
+      :root { --cam: 92px; }
+      /* on phones it sits at the top of the page and scrolls away, so it never covers the tiles */
+      .cctv { position: absolute; top: 2px; right: 4px; }
+      main { padding-top: 2.25rem; }
+    }
+    @media (max-width: 380px) { :root { --cam: 78px; } }
+    @media (prefers-reduced-motion: reduce) {
+      .tile, .open svg, .tile::after { transition: none; }
+      .tile:hover { transform: none; }
+      .cctv .head, .cctv .pupil, .cctv .lid, .cctv .glint, .cctv .rec, .cctv .rec-glow, .eyebrow::before { animation: none; }
+      .cctv .head { transform: rotate(-6deg); }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <img src="/favicon.svg" alt="" aria-hidden="true">
+      <span class="brand">Region 9</span>
+    </div>
+  </header>
+
+  <!-- Cute CCTV camera (pure SVG + CSS). Idle pan by default; follows the mouse a little on desktop. -->
+  <div class="cctv" id="cctv" aria-hidden="true">
+    <svg viewBox="10 4 130 96" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f4f7fb"/><stop offset="1" stop-color="#c9d5e2"/>
+        </linearGradient>
+        <linearGradient id="hood" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#b9cbdc"/><stop offset="1" stop-color="#8ea5bd"/>
+        </linearGradient>
+        <radialGradient id="lens" cx=".4" cy=".35" r=".75">
+          <stop offset="0" stop-color="#3d5a78"/><stop offset=".55" stop-color="#16222f"/><stop offset="1" stop-color="#05080c"/>
+        </radialGradient>
+        <radialGradient id="redglow"><stop offset="0" stop-color="#ff5a6a" stop-opacity=".9"/><stop offset="1" stop-color="#ff5a6a" stop-opacity="0"/></radialGradient>
+      </defs>
+      <!-- wall plate + arm -->
+      <rect x="122" y="10" width="14" height="46" rx="5" fill="#2a3646" stroke="#0d131b" stroke-width="2.5"/>
+      <circle cx="129" cy="19" r="2" fill="#0d131b" opacity=".6"/><circle cx="129" cy="47" r="2" fill="#0d131b" opacity=".6"/>
+      <path d="M123 33 H104" stroke="#0d131b" stroke-width="9" stroke-linecap="round"/>
+      <path d="M123 33 H104" stroke="#566a80" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="100" cy="34" r="7" fill="#566a80" stroke="#0d131b" stroke-width="2.5"/>
+      <!-- swiveling head -->
+      <g class="head">
+        <path d="M100 34 L94 46" stroke="#0d131b" stroke-width="7" stroke-linecap="round"/>
+        <path d="M100 34 L94 46" stroke="#566a80" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- body -->
+        <rect x="22" y="40" width="84" height="38" rx="15" fill="url(#body)" stroke="#0d131b" stroke-width="3"/>
+        <!-- sun hood -->
+        <path d="M16 44 Q16 34 28 34 H100 Q110 34 110 44 V47 H16 Z" fill="url(#hood)" stroke="#0d131b" stroke-width="3" stroke-linejoin="round"/>
+        <!-- cheek blush + vents -->
+        <ellipse cx="62" cy="71" rx="6" ry="3" fill="#ff8fa0" opacity=".45"/>
+        <path d="M76 61 h12 M76 67 h12 M76 73 h9" stroke="#8ea5bd" stroke-width="2.4" stroke-linecap="round"/>
+        <!-- record light -->
+        <circle class="rec-glow" cx="95" cy="56" r="10" fill="url(#redglow)"/>
+        <circle class="rec" cx="95" cy="56" r="4" fill="#ff4d5e" stroke="#7a1420" stroke-width="1.2"/>
+        <!-- lens = big eye -->
+        <circle cx="40" cy="59" r="17" fill="#e7edf4" stroke="#0d131b" stroke-width="3"/>
+        <circle cx="40" cy="59" r="12.5" fill="url(#lens)"/>
+        <g class="pupil">
+          <circle cx="40" cy="59" r="6" fill="#020406"/>
+          <circle class="glint" cx="36.5" cy="55.5" r="2.6" fill="#fff"/>
+          <circle cx="43.5" cy="62" r="1.2" fill="#fff" opacity=".7"/>
+        </g>
+        <!-- eyelid for an occasional blink -->
+        <ellipse class="lid" cx="40" cy="59" rx="15.5" ry="15.5" fill="#c9d5e2" stroke="#0d131b" stroke-width="2"/>
+      </g>
+    </svg>
+  </div>
+
+  <main>
+    <div class="wrap">
+      <p class="eyebrow">Region 9</p>
+      <h1>Tools</h1>
+      <p class="lead">Pick a tool to get started.</p>
+      <ul class="grid" id="tiles" aria-label="Tools"></ul>
+      <noscript><p class="lead"><a href="/region09-tools/alarm/" style="color:#9aafc4">Alarm Exceptions</a></p></noscript>
+    </div>
+  </main>
+
+  <footer><div class="wrap">region09.com</div></footer>
+
+  <script>
+    // ─── Add new tools here ────────────────────────────────────────────
+    // name: tile title · description: one line · href: link (internal path or full URL)
+    // icon: one of the keys in ICONS below · newTab: true to open in a new tab
+    const APPS = [
+      {
+        name: "Alarm Exceptions",
+        description: "Find arming and disarming policy exceptions by club and area.",
+        href: "/region09-tools/alarm/",
+        icon: "alarm",
+      },
+      {
+        name: "YPI Count Planner",
+        description: "Plan counts across the YPI month and the two months before it.",
+        href: "/region09-tools/ypi/",
+        icon: "file",
+      },
+      {
+        name: "GRA Analyzer",
+        description: "Find articles that were over or under received against the order.",
+        href: "/region09-tools/gra/",
+        icon: "chart",
+      },
+      {
+        name: "Cash Tracker",
+        description: "Flag repeat team members and total over/shorts across daily cashier variance reports.",
+        href: "/region09-tools/cash/",
+        icon: "cash",
+      },
+    ];
+
+    const ICONS = {
+      alarm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>',
+      app: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+      chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>',
+      cash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>',
+      file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>',
+    };
+    const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+
+    const grid = document.getElementById("tiles");
+    for (const app of APPS) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.className = "tile";
+      a.href = app.href;
+      if (app.newTab) { a.target = "_blank"; a.rel = "noopener"; }
+      a.innerHTML =
+        '<span class="icon" aria-hidden="true">' + (ICONS[app.icon] || ICONS.app) + '</span>' +
+        '<div><h2></h2><p></p></div>' +
+        '<span class="open">Open ' + ARROW + '</span>';
+      a.querySelector("h2").textContent = app.name;
+      a.querySelector("p").textContent = app.description;
+      li.appendChild(a);
+      grid.appendChild(li);
+    }
+
+    // Camera follows the mouse a little (desktop, fine pointer, motion allowed); idles back to its pan after 2.5s.
+    (function () {
+      const cam = document.getElementById("cctv");
+      const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+      const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!cam || !fine || calm) return;
+      let idle;
+      addEventListener("pointermove", (e) => {
+        const r = cam.getBoundingClientRect();
+        const cx = r.left + r.width * 0.3, cy = r.top + r.height * 0.42;
+        const dx = e.clientX - cx, dy = e.clientY - cy;
+        // head points left/down toward the page; map pointer angle into a gentle range
+        const ang = Math.atan2(dy, -dx) * 180 / Math.PI;            // 0 = straight left, + = below
+        const rot = Math.max(-18, Math.min(16, -ang * 0.45));
+        const d = Math.min(1, Math.hypot(dx, dy) / 400);
+        cam.style.setProperty("--rot", rot.toFixed(1) + "deg");
+        cam.style.setProperty("--px", (Math.max(-1, Math.min(1, dx / 300)) * 4 * d).toFixed(1) + "px");
+        cam.style.setProperty("--py", (Math.max(-1, Math.min(1, dy / 300)) * 3.5 * d).toFixed(1) + "px");
+        cam.classList.add("tracking");
+        clearTimeout(idle);
+        idle = setTimeout(() => cam.classList.remove("tracking"), 2500);
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
