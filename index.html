@@ -80,12 +80,16 @@
       color: inherit; text-decoration: none; overflow: hidden;
       transition: box-shadow .2s var(--ease), transform .2s var(--ease), background .2s var(--ease);
     }
-    .tile::after { /* soft accent glow on hover */
-      content: ""; position: absolute; inset: auto -30% -60% auto; width: 70%; height: 90%;
-      background: radial-gradient(closest-side, rgba(154,175,196,.18), transparent);
-      opacity: 0; transition: opacity .25s var(--ease); pointer-events: none;
+    .tile::after { /* soft red underglow on hover */
+      content: ""; position: absolute; left: 8%; right: 8%; bottom: -55%; height: 90%;
+      background: radial-gradient(closest-side, rgba(255,77,94,.26), rgba(255,77,94,.08) 55%, transparent);
+      opacity: 0; transition: opacity .3s var(--ease); pointer-events: none;
     }
-    .tile:hover { transform: translateY(-3px); box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 0 1px var(--border-hover), 0 18px 40px -20px rgba(154,175,196,.45); }
+    .tile:hover {
+      transform: translateY(-3px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 0 0 1px rgba(255,110,125,.38),
+                  0 22px 38px -18px rgba(255,62,82,.55), 0 10px 60px -24px rgba(255,62,82,.45);
+    }
     .tile:hover::after { opacity: 1; }
     .tile:active { transform: translateY(-1px) scale(.99); }
     .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -124,6 +128,14 @@
     .cctv .glint { animation: glint 3.5s ease-in-out infinite; }
     .cctv.tracking .head { animation: none; transform: rotate(var(--rot, 0deg)); transition: transform .35s var(--ease); }
     .cctv.tracking .pupil { animation: none; transform: translate(var(--px, 0px), var(--py, 0px)); transition: transform .25s var(--ease); }
+    .cctv.live .head { animation: none; transform: rotate(var(--rot, 0deg)); transition: none; }
+    .cctv.live .pupil { animation: none; transform: translate(var(--px, 0px), var(--py, 0px)); transition: none; }
+    /* floodlight beam (drawn by script, sits just under the camera) */
+    .beam { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 4; pointer-events: none;
+            mix-blend-mode: screen; opacity: 0; transition: opacity .6s var(--ease); }
+    .beam.on { opacity: 1; }
+    .beam .cone { filter: blur(7px); }
+    .beam .spot { filter: blur(10px); }
     @keyframes pan {
       0%, 100% { transform: rotate(-16deg); }
       12%      { transform: rotate(-16deg); }
@@ -155,6 +167,7 @@
       .tile:hover { transform: none; }
       .cctv .head, .cctv .pupil, .cctv .lid, .cctv .glint, .cctv .rec, .cctv .rec-glow, .eyebrow::before { animation: none; }
       .cctv .head { transform: rotate(-6deg); }
+      .beam { display: none; }
     }
   </style>
 </head>
@@ -214,6 +227,23 @@
       </g>
     </svg>
   </div>
+
+  <svg class="beam" id="beam" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="beamfill" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#fff6d8" stop-opacity=".55"/>
+        <stop offset=".25" stop-color="#fff1c9" stop-opacity=".22"/>
+        <stop offset="1" stop-color="#ffeab8" stop-opacity=".07"/>
+      </linearGradient>
+      <radialGradient id="spotfill">
+        <stop offset="0" stop-color="#fff4d6" stop-opacity=".30"/>
+        <stop offset=".6" stop-color="#ffeec4" stop-opacity=".12"/>
+        <stop offset="1" stop-color="#ffeec4" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <polygon class="cone" id="cone" fill="url(#beamfill)"/>
+    <ellipse class="spot" id="spot" fill="url(#spotfill)"/>
+  </svg>
 
   <main>
     <div class="wrap">
@@ -284,29 +314,58 @@
       grid.appendChild(li);
     }
 
-    // Camera follows the mouse a little (desktop, fine pointer, motion allowed); idles back to its pan after 2.5s.
+    // Camera + floodlight: aims at the mouse; after 2.5s without movement (or on touch screens) it slowly sweeps the tiles.
     (function () {
       const cam = document.getElementById("cctv");
-      const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
-      const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (!cam || !fine || calm) return;
-      let idle;
+      const beam = document.getElementById("beam");
+      const cone = document.getElementById("cone"), spot = document.getElementById("spot");
+      const grad = document.getElementById("beamfill");
+      if (!cam || !beam || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      let mouse = null, lastMove = -1e9, cur = null;
       addEventListener("pointermove", (e) => {
-        const r = cam.getBoundingClientRect();
-        const cx = r.left + r.width * 0.3, cy = r.top + r.height * 0.42;
-        const dx = e.clientX - cx, dy = e.clientY - cy;
-        // head points left/down toward the page; map pointer angle into a gentle range
-        const ang = Math.atan2(dy, -dx) * 180 / Math.PI;            // 0 = straight left, + = below
-        const rot = Math.max(-18, Math.min(16, -ang * 0.45));
-        const d = Math.min(1, Math.hypot(dx, dy) / 400);
-        cam.style.setProperty("--rot", rot.toFixed(1) + "deg");
-        cam.style.setProperty("--px", (Math.max(-1, Math.min(1, dx / 300)) * 4 * d).toFixed(1) + "px");
-        cam.style.setProperty("--py", (Math.max(-1, Math.min(1, dy / 300)) * 3.5 * d).toFixed(1) + "px");
-        cam.classList.add("tracking");
-        clearTimeout(idle);
-        idle = setTimeout(() => cam.classList.remove("tracking"), 2500);
+        if (e.pointerType !== "mouse") return;
+        mouse = { x: e.clientX, y: e.clientY }; lastMove = performance.now();
       }, { passive: true });
-    })();
+      document.addEventListener("mouseleave", () => { lastMove = -1e9; });
+      const PIVOT = [100, 34], LENS = [40, 59], VB = [10, 4, 130, 96];
+      cam.classList.add("live"); beam.classList.add("on");
+      function sweep(t) {
+        const g = document.getElementById("tiles").getBoundingClientRect();
+        const W = innerWidth, H = innerHeight;
+        const cy = Math.min(H * 0.8, Math.max(H * 0.3, g.top + g.height / 2));
+        return { x: W * (0.48 + 0.34 * Math.sin(t / 2600)), y: cy + 70 * Math.sin(t / 1700) };
+      }
+      function frame(t) {
+        const want = (mouse && t - lastMove < 2500) ? mouse : sweep(t);
+        if (!cur) cur = { x: want.x, y: want.y };
+        const k = (mouse && t - lastMove < 2500) ? 0.22 : 0.06;
+        cur.x += (want.x - cur.x) * k; cur.y += (want.y - cur.y) * k;
+        const r = cam.getBoundingClientRect(), sc = r.width / VB[2];
+        const px = r.left + (PIVOT[0] - VB[0]) * sc, py = r.top + (PIVOT[1] - VB[1]) * sc;
+        // head faces left at 0deg; aim it at the target (clamped so it stays cute)
+        const ang = Math.atan2(cur.y - py, cur.x - px) * 180 / Math.PI;   // 180 = straight left
+        let rot = ((ang - 180) % 360 + 540) % 360 - 180;
+        rot = Math.max(-62, Math.min(24, rot));
+        cam.style.setProperty("--rot", rot.toFixed(2) + "deg");
+        const rad = rot * Math.PI / 180, ox = (LENS[0] - PIVOT[0]) * sc, oy = (LENS[1] - PIVOT[1]) * sc;
+        const lx = px + ox * Math.cos(rad) - oy * Math.sin(rad);
+        const ly = py + ox * Math.sin(rad) + oy * Math.cos(rad);
+        const dx = cur.x - lx, dy = cur.y - ly, len = Math.hypot(dx, dy) || 1;
+        cam.style.setProperty("--px", (Math.max(-1, Math.min(1, dx / 300)) * 4).toFixed(2) + "px");
+        cam.style.setProperty("--py", (Math.max(-1, Math.min(1, dy / 300)) * 3.5).toFixed(2) + "px");
+        const nx = -dy / len, ny = dx / len, R = Math.max(70, Math.min(150, len * 0.16)), w0 = 5 * sc;
+        cone.setAttribute("points", [
+          [lx + nx * w0, ly + ny * w0], [cur.x + nx * R, cur.y + ny * R],
+          [cur.x - nx * R, cur.y - ny * R], [lx - nx * w0, ly - ny * w0]
+        ].map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" "));
+        grad.setAttribute("x1", lx); grad.setAttribute("y1", ly);
+        grad.setAttribute("x2", cur.x); grad.setAttribute("y2", cur.y);
+        spot.setAttribute("cx", cur.x); spot.setAttribute("cy", cur.y);
+        spot.setAttribute("rx", R * 1.15); spot.setAttribute("ry", R * 0.8);
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    })()
   </script>
 </body>
 </html>
