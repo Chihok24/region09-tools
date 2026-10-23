@@ -6,3 +6,5 @@
   Content-Type: application/manifest+json
 /cash/__grok/manifest.webmanifest
   Content-Type: application/manifest+json
+/songque/__grok/manifest.webmanifest
+  Content-Type: application/manifest+json

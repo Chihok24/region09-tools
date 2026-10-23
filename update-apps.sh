@@ -14,6 +14,7 @@ APPS=(
   "ypi   https://ypicountplanner.grok.me"
   "gra   https://gra.grok.me"
   "cash  https://r9cashtracker.grok.me"
+  "songque https://songque.grok.me"
 )
 ROOT="/workspace/region09"
 SITE_ID="9b468fde-3a4e-4c2f-8ca5-133ec27b0911"

@@ -1,0 +1,17 @@
+{
+  "name": "Grok App",
+  "short_name": "Grok App",
+  "id": "/songque/",
+  "start_url": "/songque/",
+  "scope": "/songque/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/songque/__grok/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
