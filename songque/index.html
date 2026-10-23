@@ -12,9 +12,9 @@ async function getAll(db,s){return await rq(db.transaction(s).objectStore(s).get
 function norm(m){ // array (v1) or object (v2)
  if(Array.isArray(m))return{version:null,songs:m.filter(function(i){return i&&i.file}).map(function(i){return{name:i.name,file:i.file}}),awards:m.filter(function(i){return i&&i.award}).map(function(i){return{award:i.award,file:i.file||null}}),legacy:true};
  if(m&&typeof m==="object")return{version:m.version||null,songs:m.songs||[],awards:m.awards||[],settings:m.settings};return null}
-async function fetchSong(db,songs,s,i){
+async function fetchSong(db,songs,s,i,ren){
  var song=songs.find(function(x){return x.r9File===s.file});
- if(song){if(s.name&&song.name!==s.name){song.name=s.name;var t=db.transaction("songs","readwrite");t.objectStore("songs").put(song);await done(t);return true}return false}
+ if(song){if(ren&&s.name&&song.name!==s.name){song.name=s.name;var t=db.transaction("songs","readwrite");t.objectStore("songs").put(song);await done(t);return true}return false}
  try{var fr=await fetch(base+encodeURI(s.file),{cache:"no-cache"});if(!fr.ok)return false;var blob=await fr.blob()}catch(e){return false}
  song={id:crypto.randomUUID(),name:s.name||s.file.replace(/\.[^.]+$/,"").replace(/[_-]+/g," "),mime:blob.type||"audio/mpeg",blob:blob,duration:await dur(blob),createdAt:Date.now()+i,r9File:s.file};
  var t2=db.transaction("songs","readwrite");t2.objectStore("songs").put(song);await done(t2);songs.push(song);return true}
@@ -26,7 +26,7 @@ async function seed(){
  var ver=m.version,authoritative=ver&&localStorage.getItem(VK)!==ver;
  if(!m.legacy&&!authoritative){db.close();return false}
  var songs=await getAll(db,"songs"),cues=await getAll(db,"cues");cues.sort(function(a,b){return a.position-b.position});
- for(var i=0;i<m.songs.length;i++)if(await fetchSong(db,songs,m.songs[i],i))changed=true;
+ for(var i=0;i<m.songs.length;i++)if(await fetchSong(db,songs,m.songs[i],i,authoritative))changed=true;
  function idOf(f){var s=f&&songs.find(function(x){return x.r9File===f});return s?s.id:null}
  if(authoritative){
   // published state wins: replace awards; drop website songs no longer published; keep local-only uploads
