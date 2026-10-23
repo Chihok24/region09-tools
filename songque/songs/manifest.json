@@ -1,12 +1,12 @@
 {
- "version": "2026-10-23T16:52:24.895Z",
+ "version": "2026-10-23T16:56:10.114Z",
  "settings": {
   "fadeSeconds": 4,
   "volume": 1
  },
  "songs": [
   {
-   "name": "Song 01",
+   "name": "Opening Theme",
    "file": "song-01.mp3"
   },
   {
@@ -68,6 +68,10 @@
   {
    "name": "Song 16",
    "file": "song-16.mp3"
+  },
+  {
+   "name": "Upload Test",
+   "file": "upload-test.wav"
   }
  ],
  "awards": [
@@ -81,7 +85,7 @@
   },
   {
    "award": "Best Actor",
-   "file": null
+   "file": "upload-test.wav"
   },
   {
    "award": "Best Actress",
