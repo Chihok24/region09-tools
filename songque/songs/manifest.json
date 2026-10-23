@@ -1,5 +1,9 @@
 {
- "version": "2026-10-23T16:57:45.000Z",
+ "version": "2026-10-23T17:08:08.332Z",
+ "settings": {
+  "fadeSeconds": 12,
+  "volume": 1
+ },
  "songs": [
   {
    "name": "Song 01",
