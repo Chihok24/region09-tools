@@ -70,7 +70,7 @@
       grid-template-columns: 1fr;
     }
     @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (min-width: 1100px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    @media (min-width: 1100px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     .tile {
       position: relative; display: flex; flex-direction: column; gap: .95rem;
       height: 100%; padding: 1.3rem 1.3rem 1.15rem;
@@ -169,6 +169,22 @@
       .cctv .head { transform: rotate(-6deg); }
       .beam { display: none; }
     }
+
+    .tile .lock { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 4px; font-size: .72rem; color: var(--subtle); letter-spacing: .04em; text-transform: uppercase; }
+    .tile .lock svg { width: 13px; height: 13px; }
+    .tile { position: relative; }
+    #pw-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(5,8,14,.72); backdrop-filter: blur(6px); z-index: 50; }
+    #pw-modal.open { display: flex; }
+    #pw-modal form { width: min(360px, 90vw); background: var(--bg-2); border: 1px solid var(--surface-2); border-radius: 16px; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(220,38,38,.18); }
+    #pw-modal h3 { margin: 0 0 4px; color: #fff; font-size: 1.05rem; }
+    #pw-modal p { margin: 0 0 14px; color: var(--muted); font-size: .88rem; }
+    #pw-modal input { width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--surface-2); background: var(--surface); color: var(--fg); font: inherit; }
+    #pw-modal input:focus { outline: 2px solid #dc2626; outline-offset: 1px; }
+    #pw-modal .err { color: #f87171; font-size: .82rem; min-height: 1.2em; margin: 8px 0 0; }
+    #pw-modal h3, #pw-modal p, #pw-modal .err, #pw-modal button { text-transform: none; letter-spacing: normal; font-family: inherit; }
+    #pw-modal .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+    #pw-modal button { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--surface-2); background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; }
+    #pw-modal button[type=submit] { background: #b91c1c; border-color: #dc2626; color: #fff; }
   </style>
 </head>
 <body>
@@ -254,6 +270,15 @@
       <noscript><p class="lead"><a href="/region09-tools/alarm/" style="color:#9aafc4">Alarm Exceptions</a></p></noscript>
     </div>
   </main>
+  <div id="pw-modal" role="dialog" aria-modal="true" aria-labelledby="pw-title">
+    <form id="pw-form" autocomplete="off">
+      <h3 id="pw-title">Locked tool</h3>
+      <p>Enter the password to open <span id="pw-name"></span>.</p>
+      <input id="pw-input" type="password" aria-label="Password" />
+      <div class="err" id="pw-err"></div>
+      <div class="row"><button type="button" id="pw-cancel">Cancel</button><button type="submit">Unlock</button></div>
+    </form>
+  </div>
 
   <script>
     // ─── Add new tools here ────────────────────────────────────────────
@@ -284,17 +309,40 @@
         href: "/region09-tools/cash/",
         icon: "cash",
       },
+      {
+        name: "Game Time",
+        description: "Host a live Jeopardy-style quiz. Up to 80 players join with a passcode and buzz in from their phones.",
+        href: "/region09-tools/game/",
+        icon: "game",
+        locked: true,
+      },
     ];
+    // Client-side lock only (static site): it keeps casual visitors out, it is not real security.
+    const LOCK_PW = "Region9", LOCK_KEY = "r9-game-unlocked";
 
     const ICONS = {
       alarm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>',
       app: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
       chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>',
       cash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg>',
+      game: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4M8 10v4"/><path d="M15 13h.01M18 11h.01"/></svg>',
       file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>',
     };
     const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 
+    const LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+    const pwModal = document.getElementById("pw-modal"), pwInput = document.getElementById("pw-input"), pwErr = document.getElementById("pw-err");
+    let pwTarget = null;
+    function openLock(app) { pwTarget = app; document.getElementById("pw-name").textContent = app.name; pwErr.textContent = ""; pwInput.value = ""; pwModal.classList.add("open"); setTimeout(() => pwInput.focus(), 0); }
+    function closeLock() { pwModal.classList.remove("open"); pwTarget = null; }
+    document.getElementById("pw-cancel").onclick = closeLock;
+    pwModal.addEventListener("click", (e) => { if (e.target === pwModal) closeLock(); });
+    addEventListener("keydown", (e) => { if (e.key === "Escape" && pwModal.classList.contains("open")) closeLock(); });
+    document.getElementById("pw-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (pwInput.value === LOCK_PW) { sessionStorage.setItem(LOCK_KEY, "1"); const t = pwTarget; closeLock(); location.href = t.href; }
+      else { pwErr.textContent = "Wrong password. Try again."; pwInput.select(); }
+    });
     const grid = document.getElementById("tiles");
     for (const app of APPS) {
       const li = document.createElement("li");
@@ -308,6 +356,13 @@
         '<span class="open">Open ' + ARROW + '</span>';
       a.querySelector("h2").textContent = app.name;
       a.querySelector("p").textContent = app.description;
+      if (app.locked) {
+        a.insertAdjacentHTML("beforeend", '<span class="lock" aria-label="Password required">' + LOCK_SVG + 'Locked</span>');
+        a.addEventListener("click", (e) => {
+          if (sessionStorage.getItem(LOCK_KEY) === "1") return;
+          e.preventDefault(); openLock(app);
+        });
+      }
       li.appendChild(a);
       grid.appendChild(li);
     }
