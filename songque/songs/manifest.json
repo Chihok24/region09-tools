@@ -1,66 +1,103 @@
-[
- {
-  "name": "Song 01",
-  "file": "song-01.mp3"
+{
+ "version": "2026-10-23T16:52:24.895Z",
+ "settings": {
+  "fadeSeconds": 4,
+  "volume": 1
  },
- {
-  "name": "Song 02",
-  "file": "song-02.mp3"
- },
- {
-  "name": "Song 03",
-  "file": "song-03.mp3"
- },
- {
-  "name": "Song 04",
-  "file": "song-04.mp3"
- },
- {
-  "name": "Song 05",
-  "file": "song-05.mp3"
- },
- {
-  "name": "Song 06",
-  "file": "song-06.mp3"
- },
- {
-  "name": "Song 07",
-  "file": "song-07.mp3"
- },
- {
-  "name": "Song 08",
-  "file": "song-08.mp3"
- },
- {
-  "name": "Song 09",
-  "file": "song-09.mp3"
- },
- {
-  "name": "Song 10",
-  "file": "song-10.mp3"
- },
- {
-  "name": "Song 11",
-  "file": "song-11.mp3"
- },
- {
-  "name": "Song 12",
-  "file": "song-12.mp3"
- },
- {
-  "name": "Song 13",
-  "file": "song-13.mp3"
- },
- {
-  "name": "Song 14",
-  "file": "song-14.mp3"
- },
- {
-  "name": "Song 15",
-  "file": "song-15.mp3"
- },
- {
-  "name": "Song 16",
-  "file": "song-16.mp3"
- }
-]
+ "songs": [
+  {
+   "name": "Song 01",
+   "file": "song-01.mp3"
+  },
+  {
+   "name": "Song 02",
+   "file": "song-02.mp3"
+  },
+  {
+   "name": "Song 03",
+   "file": "song-03.mp3"
+  },
+  {
+   "name": "Song 04",
+   "file": "song-04.mp3"
+  },
+  {
+   "name": "Song 05",
+   "file": "song-05.mp3"
+  },
+  {
+   "name": "Song 06",
+   "file": "song-06.mp3"
+  },
+  {
+   "name": "Song 07",
+   "file": "song-07.mp3"
+  },
+  {
+   "name": "Song 08",
+   "file": "song-08.mp3"
+  },
+  {
+   "name": "Song 09",
+   "file": "song-09.mp3"
+  },
+  {
+   "name": "Song 10",
+   "file": "song-10.mp3"
+  },
+  {
+   "name": "Song 11",
+   "file": "song-11.mp3"
+  },
+  {
+   "name": "Song 12",
+   "file": "song-12.mp3"
+  },
+  {
+   "name": "Song 13",
+   "file": "song-13.mp3"
+  },
+  {
+   "name": "Song 14",
+   "file": "song-14.mp3"
+  },
+  {
+   "name": "Song 15",
+   "file": "song-15.mp3"
+  },
+  {
+   "name": "Song 16",
+   "file": "song-16.mp3"
+  }
+ ],
+ "awards": [
+  {
+   "award": "Best Picture",
+   "file": "song-03.mp3"
+  },
+  {
+   "award": "Best Director",
+   "file": null
+  },
+  {
+   "award": "Best Actor",
+   "file": null
+  },
+  {
+   "award": "Best Actress",
+   "file": null
+  },
+  {
+   "award": "Best Original Score",
+   "file": null
+  },
+  {
+   "award": "Lifetime Achievement",
+   "file": null
+  },
+  {
+   "award": "Test Award X",
+   "file": "song-05.mp3"
+  }
+ ]
+}
