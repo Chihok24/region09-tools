@@ -1,91 +1,91 @@
 {
- "version": "2026-10-23T17:08:44.189Z",
+ "version": "2026-10-23T17:16:55.036Z",
  "settings": {
-  "fadeSeconds": 12,
+  "fadeSeconds": 2,
   "volume": 1
  },
  "songs": [
   {
-   "name": "Song 01",
+   "name": "2. Wake me up before you go go",
    "file": "song-01.mp3"
   },
   {
-   "name": "Song 02",
+   "name": "4. Titanium",
    "file": "song-02.mp3"
   },
   {
-   "name": "Song 03",
+   "name": "6.Hall of fame",
    "file": "song-03.mp3"
   },
   {
-   "name": "Song 04",
+   "name": "7.Celebration",
    "file": "song-04.mp3"
   },
   {
-   "name": "Song 05",
+   "name": "8. On top of the world",
    "file": "song-05.mp3"
   },
   {
-   "name": "Song 06",
+   "name": "3. Why can't we be friends",
    "file": "song-06.mp3"
   },
   {
-   "name": "Song 07",
+   "name": "9. Count on me",
    "file": "song-07.mp3"
   },
   {
-   "name": "Song 08",
+   "name": "11. We are the champion",
    "file": "song-08.mp3"
   },
   {
-   "name": "Song 09",
+   "name": "12. Roar",
    "file": "song-09.mp3"
   },
   {
-   "name": "Song 10",
+   "name": "13. Long Live",
    "file": "song-10.mp3"
   },
   {
-   "name": "Song 11",
+   "name": "14. Unstoppable",
    "file": "song-11.mp3"
   },
   {
-   "name": "Song 12",
+   "name": "15. Can't wait to be king",
    "file": "song-12.mp3"
   },
   {
-   "name": "Song 13",
+   "name": "16. Industructable",
    "file": "song-13.mp3"
   },
   {
-   "name": "Song 14",
+   "name": "5. You're the best",
    "file": "song-14.mp3"
   },
   {
-   "name": "Song 15",
+   "name": "10. Rise Up",
    "file": "song-15.mp3"
   },
   {
-   "name": "Song 16",
+   "name": "1. Luthor",
    "file": "song-16.mp3"
   }
  ],
  "awards": [
   {
    "award": "I’ve got your six, unless your car needs a fix award",
-   "file": null
+   "file": "song-02.mp3"
   },
   {
    "award": "Gasapasnooza Award",
-   "file": null
+   "file": "song-02.mp3"
   },
   {
    "award": "Dumpster Fire Fighter",
-   "file": null
+   "file": "song-03.mp3"
   },
   {
    "award": "Shrink Barricade Award",
-   "file": null
+   "file": "song-16.mp3"
   },
   {
    "award": "Key Contributor",
