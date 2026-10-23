@@ -1,5 +1,5 @@
 {
- "version": "2026-10-23T17:08:08.332Z",
+ "version": "2026-10-23T17:08:44.189Z",
  "settings": {
   "fadeSeconds": 12,
   "volume": 1
@@ -72,27 +72,67 @@
  ],
  "awards": [
   {
-   "award": "Best Picture",
+   "award": "I’ve got your six, unless your car needs a fix award",
    "file": null
   },
   {
-   "award": "Best Director",
+   "award": "Gasapasnooza Award",
    "file": null
   },
   {
-   "award": "Best Actor",
+   "award": "Dumpster Fire Fighter",
    "file": null
   },
   {
-   "award": "Best Actress",
+   "award": "Shrink Barricade Award",
    "file": null
   },
   {
-   "award": "Best Original Score",
+   "award": "Key Contributor",
    "file": null
   },
   {
-   "award": "Lifetime Achievement",
+   "award": "Key Contributor",
+   "file": null
+  },
+  {
+   "award": "Key Contributor",
+   "file": null
+  },
+  {
+   "award": "Key Contributor",
+   "file": null
+  },
+  {
+   "award": "Support Partner of the Year",
+   "file": null
+  },
+  {
+   "award": "Raise the Roof Award",
+   "file": null
+  },
+  {
+   "award": "Shrink Champion",
+   "file": null
+  },
+  {
+   "award": "Safety Champion",
+   "file": null
+  },
+  {
+   "award": "RFSM of the Year",
+   "file": null
+  },
+  {
+   "award": "RAPM of the Year",
+   "file": null
+  },
+  {
+   "award": "Jr RAPM Of the Year",
+   "file": null
+  },
+  {
+   "award": "Recognition of Jim",
    "file": null
   }
  ]
