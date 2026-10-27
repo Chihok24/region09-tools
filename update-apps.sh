@@ -15,6 +15,7 @@ APPS=(
   "gra   https://gra.grok.me"
   "cash  https://r9cashtracker.grok.me"
   "songque https://songque.grok.me"
+  "apalert https://apalert.grok.me"
 )
 ROOT="/workspace/region09"
 SITE_ID="9b468fde-3a4e-4c2f-8ca5-133ec27b0911"
@@ -177,7 +178,7 @@ write_netlify_config() {
 
 if [[ $MIRROR == 1 ]]; then
   for e in "${APPS[@]}"; do set -- $e
-    if [[ ${#WANT[@]} == 0 || " ${WANT[*]} " == *" $1 "* ]]; then mirror_app "$1" "$2"; fi
+    if [[ ${#WANT[@]} == 0 || " ${WANT[*]} " == *" $1 "* ]]; then mirror_app "$1" "$2"; [[ "$1" == apalert ]] && python3 "$ROOT/patch-apalert.py" "$ROOT"/apalert/assets/routes-*.js; fi
   done
 fi
 write_netlify_config
