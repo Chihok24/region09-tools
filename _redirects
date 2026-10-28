@@ -12,6 +12,8 @@
 /songque/*    /songque/index.html  200
 /apalert      /apalert/index.html  200
 /apalert/*    /apalert/index.html  200
+/r9guide      /r9guide/index.html  200
+/r9guide/*    /r9guide/index.html  200
 # Keep local tooling out of the public site
 /update-apps.sh   /404.html  404!
 /update-alarm.sh  /404.html  404!
