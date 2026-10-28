@@ -1,8 +1,8 @@
 {
- "version": "2026-10-27T22:16:27.184Z",
+ "version": "2026-10-28T13:14:55.501Z",
  "settings": {
   "fadeSeconds": 2,
-  "volume": 0
+  "volume": 1
  },
  "songs": [
   {
@@ -72,76 +72,80 @@
   {
    "name": "heat is on",
    "file": "heat-is-on.mp3"
+  },
+  {
+   "name": "heat is on",
+   "file": "heat-is-on-2.mp3"
   }
  ],
  "awards": [
   {
    "award": "Golden Thermometer Award",
-   "file": "heat-is-on.mp3"
+   "file": "heat-is-on-2.mp3"
   },
   {
    "award": "I’ve got your six, unless your car needs a fix award",
-   "file": null
+   "file": "song-16.mp3"
   },
   {
    "award": "Gasapasnooza Award",
-   "file": null
+   "file": "song-01.mp3"
   },
   {
    "award": "Dumpster Fire Fighter",
-   "file": null
+   "file": "song-06.mp3"
   },
   {
    "award": "Shrink Barricade Award",
-   "file": null
+   "file": "song-02.mp3"
   },
   {
    "award": "Key Contributor",
-   "file": null
+   "file": "song-14.mp3"
   },
   {
    "award": "Key Contributor",
-   "file": null
+   "file": "song-03.mp3"
   },
   {
    "award": "Key Contributor",
-   "file": null
+   "file": "song-04.mp3"
   },
   {
    "award": "Key Contributor",
-   "file": null
+   "file": "song-05.mp3"
   },
   {
    "award": "Support Partner of the Year",
-   "file": null
+   "file": "song-07.mp3"
   },
   {
    "award": "Raise the Roof Award",
-   "file": null
+   "file": "song-15.mp3"
   },
   {
    "award": "Shrink Champion",
-   "file": null
+   "file": "song-08.mp3"
   },
   {
    "award": "Safety Champion",
-   "file": null
+   "file": "song-09.mp3"
   },
   {
    "award": "RFSM of the Year",
-   "file": null
+   "file": "song-10.mp3"
   },
   {
    "award": "RAPM of the Year",
-   "file": null
+   "file": "song-11.mp3"
   },
   {
    "award": "Jr RAPM Of the Year",
-   "file": null
+   "file": "song-12.mp3"
   },
   {
    "award": "Recognition of Jim",
-   "file": null
+   "file": "song-13.mp3"
   }
  ]
 }
