@@ -15,3 +15,15 @@ for root in sys.argv[1:] or ['/workspace/region09','/workspace/r09repo','/worksp
         assert s.count(OLD)==1 and s.count('function an(e,t=``)')==1, p
         s=s.replace(OLD,NEW).replace('function an(e,t=``)',FN+'function an(e,t=``)')
         open(p,'w').write(s); print('patched',p)
+# --- Step 2 (re-runnable): gas-station sites/partitions are not club areas ---
+GOLD="let _=r9Area(f,h,m);if(!_){l+=1;continue}"
+GNEW="let _=/\\bgas\\b/i.test(d)?null:r9Area(f,h,m);if(!_){l+=1;continue}"
+for root in sys.argv[1:] or ['/workspace/region09','/workspace/r09repo','/workspace/ghp']:
+    for p in glob.glob(root+'/alarm/assets/routes-*.js'):
+        s=open(p).read()
+        s2=s.replace("if(/\\bgas/.test(n))break;","if(/\\bgas/.test(n))return null;")
+        if GNEW not in s2:
+            assert s2.count(GOLD)==1, p
+            s2=s2.replace(GOLD,GNEW)
+        if s2!=s: open(p,'w').write(s2); print('gas-patched',p)
+        else: print('gas already',p)
