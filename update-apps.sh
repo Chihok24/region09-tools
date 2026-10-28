@@ -14,6 +14,9 @@ APPS=(
   "ypi   https://ypicountplanner.grok.me"
   "gra   https://gra.grok.me"
   "cash  https://r9cashtracker.grok.me"
+  "songque https://songque.grok.me"
+  "apalert https://apalert.grok.me"
+  "r9guide https://r9guide.grok.me"
 )
 ROOT="/workspace/region09"
 SITE_ID="9b468fde-3a4e-4c2f-8ca5-133ec27b0911"
@@ -70,7 +73,7 @@ mirror_app() { # mirror_app <name> <src>
   echo "   got / (index.html)"
 
   # 1) every root-relative href/src in the HTML (not protocol-relative //host)
-  for p in $(grep -aoE '(href|src)="/[^/"][^"]*"' "$TMP/index.html" | sed -E 's/^[a-z]+="([^"?#]+).*/\1/' | sort -u); do get "$p"; done
+  for p in $(grep -aoE '(href|src)="/[^/"][^"]*"' "$TMP/index.html" | sed -E 's/^[a-z]+="([^"?#]+).*/\1/' | sort -u); do if [[ "$p" == *.* ]]; then get "$p"; else get "$p" opt || true; fi; done
   for p in favicon.svg __grok/manifest.webmanifest __grok/icon-180.png; do [[ -f "$TMP/$p" ]] || get "$p" opt || true; done
 
   # 2) recursively: hashed chunks + absolute file paths referenced inside JS/CSS
@@ -176,7 +179,8 @@ write_netlify_config() {
 
 if [[ $MIRROR == 1 ]]; then
   for e in "${APPS[@]}"; do set -- $e
-    if [[ ${#WANT[@]} == 0 || " ${WANT[*]} " == *" $1 "* ]]; then mirror_app "$1" "$2"; fi
+    if [[ ${#WANT[@]} == 0 || " ${WANT[*]} " == *" $1 "* ]]; then mirror_app "$1" "$2"; [[ "$1" == apalert ]] && python3 "$ROOT/patch-apalert.py" "$ROOT"/apalert/assets/routes-*.js; fi
+    [[ "$1" == r9guide && -f "$ROOT/r9guide/index.html" ]] && perl -pi -e 's{href="/(start|summarize)"}{href="/r9guide/$1"}g' "$ROOT/r9guide/index.html"
   done
 fi
 write_netlify_config
