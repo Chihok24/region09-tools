@@ -311,7 +311,6 @@
       },
       {
         name: "Walk-On",
-        description: "Cue walk-on music for an award show. Preload songs in order, play when the winner is called, and fade out at the stage.",
         href: "/songque/",
         icon: "music",
         locked: true,
@@ -370,7 +369,8 @@
         '<div><h2></h2><p></p></div>' +
         '<span class="open">Open ' + ARROW + '</span>';
       a.querySelector("h2").textContent = app.name;
-      a.querySelector("p").textContent = app.description;
+      if (app.description) a.querySelector("p").textContent = app.description;
+      else a.querySelector("p").remove();
       if (app.locked) {
         a.insertAdjacentHTML("beforeend", '<span class="lock" aria-label="Password required">' + LOCK_SVG + 'Locked</span>');
         a.addEventListener("click", (e) => {
