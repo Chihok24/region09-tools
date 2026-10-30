@@ -185,6 +185,17 @@
     #pw-modal .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
     #pw-modal button { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--surface-2); background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; }
     #pw-modal button[type=submit] { background: #b91c1c; border-color: #dc2626; color: #fff; }
+    /* rat chase easter egg */
+    .cctv { pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .rat { position: fixed; left: 0; bottom: 6px; width: 64px; height: 40px; z-index: 6; pointer-events: none; will-change: transform; }
+    .rat svg { width: 100%; height: 100%; overflow: visible; display: block; }
+    .rat .body { animation: ratbob .16s ease-in-out infinite alternate; transform-box: view-box; }
+    .rat .leg { transform-box: fill-box; transform-origin: 50% 0; animation: ratleg .16s linear infinite alternate; }
+    .rat .leg.b { animation-delay: -.16s; }
+    .rat .tail { transform-box: fill-box; transform-origin: 0% 50%; animation: rattail .3s ease-in-out infinite alternate; }
+    @keyframes ratbob { from { transform: translateY(0); } to { transform: translateY(-2px); } }
+    @keyframes ratleg { from { transform: rotate(-35deg); } to { transform: rotate(35deg); } }
+    @keyframes rattail { from { transform: rotate(-12deg); } to { transform: rotate(14deg); } }
   </style>
 </head>
 <body>
@@ -398,16 +409,17 @@
         return { x: W * (0.48 + 0.34 * Math.sin(t / 2600)), y: cy + 70 * Math.sin(t / 1700) };
       }
       function frame(t) {
-        const want = (mouse && t - lastMove < 2500) ? mouse : sweep(t);
+        const rat = window.__ratTarget;
+        const want = rat || ((mouse && t - lastMove < 2500) ? mouse : sweep(t));
         if (!cur) cur = { x: want.x, y: want.y };
-        const k = (mouse && t - lastMove < 2500) ? 0.22 : 0.06;
+        const k = rat ? 0.3 : (mouse && t - lastMove < 2500) ? 0.22 : 0.06;
         cur.x += (want.x - cur.x) * k; cur.y += (want.y - cur.y) * k;
         const r = cam.getBoundingClientRect(), sc = r.width / VB[2];
         const px = r.left + (PIVOT[0] - VB[0]) * sc, py = r.top + (PIVOT[1] - VB[1]) * sc;
         // head faces left at 0deg; aim it at the target (clamped so it stays cute)
         const ang = Math.atan2(cur.y - py, cur.x - px) * 180 / Math.PI;   // 180 = straight left
         let rot = ((ang - 180) % 360 + 540) % 360 - 180;
-        rot = Math.max(-62, Math.min(24, rot));
+        rot = Math.max(rat ? -125 : -62, Math.min(24, rot));
         cam.style.setProperty("--rot", rot.toFixed(2) + "deg");
         const rad = rot * Math.PI / 180, ox = (LENS[0] - PIVOT[0]) * sc, oy = (LENS[1] - PIVOT[1]) * sc;
         const lx = px + ox * Math.cos(rad) - oy * Math.sin(rad);
@@ -427,7 +439,38 @@
         requestAnimationFrame(frame);
       }
       requestAnimationFrame(frame);
-    })()
+    })();
+    // Easter egg: click the camera -> a rat scurries bottom-right to bottom-left and the camera tracks it (~3s).
+    (function () {
+      const cam = document.getElementById("cctv");
+      if (!cam) return;
+      const RAT = '<svg viewBox="0 0 64 40" xmlns="http://www.w3.org/2000/svg">'
+        + '<path class="tail" d="M48 26 C58 24 60 14 63 12" stroke="#d9a0a8" stroke-width="2.4" fill="none" stroke-linecap="round"/>'
+        + '<g class="leg a"><rect x="14" y="28" width="3" height="8" rx="1.5" fill="#6b6f7a"/><rect x="38" y="28" width="3" height="8" rx="1.5" fill="#6b6f7a"/></g>'
+        + '<g class="leg b"><rect x="20" y="28" width="3" height="8" rx="1.5" fill="#575b65"/><rect x="43" y="28" width="3" height="8" rx="1.5" fill="#575b65"/></g>'
+        + '<g class="body"><ellipse cx="32" cy="24" rx="17" ry="9.5" fill="#8b909c"/>'
+        + '<path d="M17 22 C12 21 7 23 3 26 C7 29 12 29 18 28 Z" fill="#8b909c"/>'
+        + '<circle cx="3.5" cy="26" r="2" fill="#f2a7b4"/>'
+        + '<circle cx="18" cy="15" r="5.5" fill="#9ca1ad"/><circle cx="18" cy="15" r="3.2" fill="#f2b8c2"/>'
+        + '<circle cx="11" cy="22.5" r="1.8" fill="#14171c"/><circle cx="11.6" cy="22" r=".6" fill="#fff"/>'
+        + '<path d="M4 25 l-3 -2 M4 26.5 l-3.4 .4" stroke="#3a3d44" stroke-width=".6"/></g></svg>';
+      let busy = false;
+      cam.addEventListener("click", () => {
+        if (busy) return; busy = true;
+        const rat = document.createElement("div");
+        rat.className = "rat"; rat.setAttribute("aria-hidden", "true"); rat.innerHTML = RAT;
+        document.body.appendChild(rat);
+        const W = innerWidth, x0 = W + 10, x1 = -80, D = 3000, t0 = performance.now();
+        (function step(t) {
+          const p = Math.min(1, (t - t0) / D), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+          const x = x0 + (x1 - x0) * (0.15 * p + 0.85 * e);
+          rat.style.transform = "translateX(" + x.toFixed(1) + "px)";
+          window.__ratTarget = { x: Math.max(0, Math.min(W, x + 20)), y: innerHeight - 24 };
+          if (p < 1) requestAnimationFrame(step);
+          else { rat.remove(); window.__ratTarget = null; busy = false; }
+        })(t0);
+      });
+    })();
   </script>
 </body>
 </html>
