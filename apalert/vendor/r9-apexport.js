@@ -1,4 +1,4 @@
-/* Region 9 AP Alert extra exports: PNG picture and Outlook template (.oft). Needs vendor/r9-cfb.js. */
+/* Region 9 AP Alert extra exports: PNG picture and Outlook unsent draft (.msg; opens editable with importance kept). Needs vendor/r9-cfb.js. */
 (function(){
 var BODY=["Team,","","Please communicate the attached AP Alert.","","Ensure that all MEAs, Frontline Team Members, Cart Retrievers, BOPIC Team Members, Recovery Team Members, Utility Clerks and MODs are informed, as it is critical that we identify these subjects immediately upon entry.","","Please print the attached AP Alert in color and post it in the following locations:","","Employee Breakroom AP Board","Front Door AP Binder","","Additionally, review this alert during all team huddles.","Reminder: These alerts must be reviewed promptly upon receipt, communicated to the team after printing, and kept readily available for reference should an individual matching the description enter the club. Please contact your RAPM immediately with any sightings or relevant information."];
 function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
@@ -35,5 +35,5 @@ window.r9apx=async function(mode,pdfFile,pdfName,form,pdfjs){var base=pdfName.re
  var title=["AP Alert",form.scope&&form.scope+" ALERT",form.incidentType&&form.incidentType.trim(),form.impactedClubs&&"Club "+form.impactedClubs.trim(),form.caseNumber&&"Case "+form.caseNumber.trim()].filter(Boolean);
  var subject=title[0]+" - "+title.slice(1).join(" - ");var cid="apalert-"+Date.now()+"@region9";
  var bytes=oft({subject:subject,html:html(cid),atts:[{name:base+".png",mime:"image/png",data:new Uint8Array(await img.arrayBuffer()),cid:cid},{name:pdfName,mime:"application/pdf",data:new Uint8Array(await pdfFile.arrayBuffer())}]});
- dl(new Blob([bytes],{type:"application/vnd.ms-outlook"}),base+".oft");return base+".oft"};
+ dl(new Blob([bytes],{type:"application/vnd.ms-outlook"}),base+".msg");return base+".msg"};
 })();
