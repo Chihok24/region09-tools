@@ -75,7 +75,7 @@ for f in sys.argv[1:]:
       'a=new File([r],i,{type:`application/pdf`});if(r9m){await r9xload();b(await window.r9apx(r9m,a,i,e,await r9pdfjs()));return}let o=document.createElement(`a`);')
     BTN=lambda m,lab,busy: '(0,$.jsx)(`button`,{type:`button`,onClick:()=>N(`'+m+'`),disabled:s||te.length>0,className:`flex h-11 flex-1 items-center justify-center gap-2 rounded-md border-2 border-alert bg-sheet font-display text-base tracking-wide text-alert transition hover:bg-alert hover:text-paper disabled:cursor-not-allowed disabled:opacity-50`,children:[(0,$.jsx)(l,{className:`size-4`,"aria-hidden":`true`}),`'+lab+'`]})'
     a='s?`Building alert…`:`Download PDF alert`]}),'
-    s=R(s,a,a+'(0,$.jsxs)(`div`,{className:`mt-2 flex gap-2`,children:['+BTN('png','Export picture','')+','+BTN('oft','Export email (.oft)','')+']}),')
+    s=R(s,a,a+'(0,$.jsxs)(`div`,{className:`mt-2 flex gap-2`,children:['+BTN('png','Export picture','')+','+BTN('oft','Export email (.msg)','')+']}),')
     os.makedirs(os.path.join(base,'vendor'),exist_ok=True)
     for n in ('r9-apexport.js','r9-cfb.js'): shutil.copy('/workspace/region09/apx/'+n,os.path.join(base,'vendor',n))
     open(f,'w').write(s); print('apx',f)
