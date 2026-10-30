@@ -187,10 +187,15 @@
     #pw-modal button[type=submit] { background: #b91c1c; border-color: #dc2626; color: #fff; }
     /* rat chase easter egg */
     .cctv { pointer-events: auto; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-    .rat { position: fixed; left: 0; bottom: 4px; width: 92px; z-index: 6; pointer-events: none; will-change: transform; }
-    .rat img { width: 100%; height: auto; display: block; transform-origin: 60% 100%; animation: ratgait .14s ease-in-out infinite alternate; filter: drop-shadow(0 3px 2px rgba(0,0,0,.35)); }
-    @keyframes ratgait { from { transform: translateY(0) scaleY(1) skewX(0); } to { transform: translateY(-2.5px) scaleY(.96) skewX(-4deg); } }
-    @media (max-width: 600px) { .rat { width: 66px; } }
+    .rat { position: fixed; left: 0; bottom: 6px; width: 82px; height: 51px; z-index: 6; pointer-events: none; will-change: transform; }
+    .rat svg { width: 100%; height: 100%; overflow: visible; display: block; }
+    .rat .body { animation: ratbob .16s ease-in-out infinite alternate; transform-box: view-box; }
+    .rat .leg { transform-box: fill-box; transform-origin: 50% 0; animation: ratleg .16s linear infinite alternate; }
+    .rat .leg.b { animation-delay: -.16s; }
+    .rat .tail { transform-box: fill-box; transform-origin: 0% 50%; animation: rattail .3s ease-in-out infinite alternate; }
+    @keyframes ratbob { from { transform: translateY(0); } to { transform: translateY(-2px); } }
+    @keyframes ratleg { from { transform: rotate(-35deg); } to { transform: rotate(35deg); } }
+    @keyframes rattail { from { transform: rotate(-12deg); } to { transform: rotate(14deg); } }
   </style>
 </head>
 <body>
@@ -439,7 +444,18 @@
     (function () {
       const cam = document.getElementById("cctv");
       if (!cam) return;
-      const RAT = '<img src="/region09-tools/assets/rat/rat.webp" alt="" draggable="false">';
+      const RAT = '<svg viewBox="0 0 64 40" xmlns="http://www.w3.org/2000/svg">'
+        + '<path class="tail" d="M48 26 C58 24 60 14 63 12" stroke="#d9a0a8" stroke-width="2.4" fill="none" stroke-linecap="round"/>'
+        + '<g class="leg a"><rect x="14" y="28" width="3" height="8" rx="1.5" fill="#6b6f7a"/><rect x="38" y="28" width="3" height="8" rx="1.5" fill="#6b6f7a"/></g>'
+        + '<g class="leg b"><rect x="20" y="28" width="3" height="8" rx="1.5" fill="#575b65"/><rect x="43" y="28" width="3" height="8" rx="1.5" fill="#575b65"/></g>'
+        + '<g class="body"><ellipse cx="32" cy="24" rx="17" ry="9.5" fill="#8b909c"/>'
+        + '<path d="M17 22 C12 21 7 23 3 26 C7 29 12 29 18 28 Z" fill="#8b909c"/>'
+        + '<circle cx="3.5" cy="26" r="2" fill="#f2a7b4"/>'
+        + '<circle cx="18" cy="15" r="5.5" fill="#9ca1ad"/><circle cx="18" cy="15" r="3.2" fill="#f2b8c2"/>'
+        + '<circle cx="11" cy="22.5" r="1.8" fill="#14171c"/><circle cx="11.6" cy="22" r=".6" fill="#fff"/>'
+        + '<path d="M4 25 l-3 -2 M4 26.5 l-3.4 .4" stroke="#3a3d44" stroke-width=".6"/>'
+        + '<g class="cheese"><path d="M5 24.6 L-9 21 L-9 30.6 L5 27.6 Z" fill="#f7c932" stroke="#c8960f" stroke-width=".7" stroke-linejoin="round"/><path d="M-9 21 L-6.5 19.6 L6 23.8 L5 24.6 Z" fill="#ffe27a" stroke="#c8960f" stroke-width=".6" stroke-linejoin="round"/>'
+        + '<circle cx="-5.5" cy="25" r="1.3" fill="#d9a514"/><circle cx="-1.5" cy="27.4" r=".9" fill="#d9a514"/><circle cx="-7" cy="28.6" r=".8" fill="#d9a514"/><circle cx="1.4" cy="25" r=".6" fill="#d9a514"/></g></g></svg>';
       let busy = false;
       cam.addEventListener("click", () => {
         if (busy) return; busy = true;
@@ -451,7 +467,7 @@
           const p = Math.min(1, (t - t0) / D), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
           const x = x0 + (x1 - x0) * (0.15 * p + 0.85 * e);
           rat.style.transform = "translateX(" + x.toFixed(1) + "px)";
-          window.__ratTarget = { x: Math.max(0, Math.min(W, x + 30)), y: innerHeight - 24 };
+          window.__ratTarget = { x: Math.max(0, Math.min(W, x + 26)), y: innerHeight - 24 };
           if (p < 1) requestAnimationFrame(step);
           else { rat.remove(); window.__ratTarget = null; busy = false; }
         })(t0);
